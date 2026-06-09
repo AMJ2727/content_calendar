@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unbox My Box — Content Calendar</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --cream: #FAF7F2;
+  --blush: #F2E8E1;
+  --rose: #D4957A;
+  --deep-rose: #A85C42;
+  --mauve: #C9A89A;
+  --sage: #8FAF9F;
+  --deep-sage: #4A7A6A;
+  --lavender: #C8BDD9;
+  --deep-lav: #7A6A9A;
+  --gold: #C9A227;
+  --dark: #2A1F1A;
+  --mid: #6B5248;
+  --light-text: #9E8880;
+  --white: #FFFFFF;
+  --shadow: rgba(42,31,26,0.12);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--dark);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--dark);
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--cream);
+  letter-spacing: 0.5px;
+}
+.header-sub {
+  font-size: 11px;
+  color: var(--mauve);
+  margin-top: 2px;
+}
+.view-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 99px;
+  padding: 4px;
+}
+.view-tab {
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: var(--mauve);
+  transition: all 0.2s;
+}
+.view-tab.active {
+  background: var(--rose);
+  color: white;
+}
+
+/* ── MAIN ── */
+.main { padding: 20px 16px; max-width: 900px; margin: 0 auto; }
+
+/* ── WEEK NAV ── */
+.week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.week-label {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: var(--dark);
+}
+.nav-btn {
+  background: white;
+  border: 1px solid var(--blush);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--mid);
+  transition: all 0.15s;
+}
+.nav-btn:hover { background: var(--blush); }
+.today-btn {
+  background: var(--rose);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ── WEEK GRID ── */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.day-col {
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1.5px solid var(--blush);
+  min-height: 180px;
+  transition: border-color 0.15s;
+}
+.day-col.today { border-color: var(--rose); }
+.day-col.friday { background: #FDF9F5; }
+
+.day-header {
+  padding: 10px 10px 8px;
+  border-bottom: 1px solid var(--blush);
+  text-align: center;
+}
+.day-name {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--light-text);
+}
+.day-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  color: var(--dark);
+  line-height: 1.1;
+}
+.day-col.today .day-num { color: var(--rose); }
+.day-col.friday .day-name { color: var(--rose); }
+
+.day-body {
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 120px;
+}
+
+/* ── CONTENT CHIPS ── */
+.chip {
+  border-radius: 8px;
+  padding: 5px 7px;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  line-height: 1.3;
+  transition: transform 0.1s, opacity 0.1s;
+  position: relative;
+}
+.chip:active { transform: scale(0.96); }
+.chip.film { background: #EDF6F2; color: var(--deep-sage); border-left: 3px solid var(--sage); }
+.chip.edit { background: #EEF0FA; color: var(--deep-lav); border-left: 3px solid var(--lavender); }
+.chip.publish { background: #FDF0EA; color: var(--deep-rose); border-left: 3px solid var(--rose); }
+.chip.deadline { background: #FFF3E0; color: #8B4513; border-left: 3px solid var(--gold); }
+.chip-stage { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; }
+.chip-name { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.chip-platform { font-size: 8px; opacity: 0.6; }
+
+.add-btn {
+  background: none;
+  border: 1.5px dashed var(--blush);
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 18px;
+  color: var(--mauve);
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.15s;
+  margin-top: auto;
+}
+.add-btn:hover { border-color: var(--rose); color: var(--rose); background: var(--blush); }
+
+.filming-window {
+  font-size: 9px;
+  color: var(--light-text);
+  text-align: center;
+  padding: 3px 4px;
+  background: var(--blush);
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+/* ── BACKLOG PANEL ── */
+.backlog-panel {
+  background: white;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--blush);
+  overflow: hidden;
+}
+.backlog-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--blush);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.backlog-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+}
+.backlog-count {
+  background: var(--rose);
+  color: white;
+  border-radius: 99px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.backlog-filters {
+  display: flex;
+  gap: 6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--blush);
+  flex-wrap: wrap;
+}
+.filter-pill {
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--blush);
+  background: white;
+  color: var(--mid);
+  transition: all 0.15s;
+}
+.filter-pill.active { background: var(--dark); color: white; border-color: var(--dark); }
+.filter-pill.high { border-color: var(--gold); color: var(--gold); }
+.filter-pill.high.active { background: var(--gold); color: white; }
+
+.backlog-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+.backlog-item {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--blush);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: grab;
+  transition: background 0.15s;
+}
+.backlog-item:hover { background: var(--cream); }
+.backlog-item:last-child { border-bottom: none; }
+.backlog-item.priority-high { border-left: 3px solid var(--gold); }
+.backlog-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-film { background: var(--sage); }
+.dot-campaign { background: var(--gold); }
+.dot-purchase { background: var(--lavender); }
+.backlog-info { flex: 1; min-width: 0; }
+.backlog-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.backlog-meta { font-size: 11px; color: var(--light-text); margin-top: 1px; }
+.backlog-badges { display: flex; gap: 4px; flex-shrink: 0; }
+.badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.badge-deadline { background: #FFF3E0; color: #8B4513; }
+.badge-high { background: #FEF9E7; color: var(--gold); }
+.badge-campaign { background: #EDF6F2; color: var(--deep-sage); }
+.badge-platform { background: var(--blush); color: var(--mid); }
+.badge-cheers { background: #FDE8E8; color: #C0392B; }
+
+.schedule-btn {
+  background: var(--rose);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.schedule-btn:hover { background: var(--deep-rose); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(42,31,26,0.5);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: white;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+.modal-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  margin-bottom: 16px;
+  color: var(--dark);
+}
+.modal-field { margin-bottom: 14px; }
+.modal-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--light-text); margin-bottom: 5px; display: block; }
+.modal-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--blush);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--dark);
+  outline: none;
+}
+.modal-input:focus { border-color: var(--rose); }
+.modal-select { appearance: none; background: white; }
+.modal-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.modal-detail {
+  background: var(--cream);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  margin-bottom: 14px;
+}
+.modal-detail-label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: var(--light-text); margin-bottom: 4px; }
+.modal-detail-val { font-size: 14px; color: var(--dark); }
+.modal-btns { display: flex; gap: 8px; margin-top: 16px; }
+.btn-primary {
+  flex: 1;
+  padding: 12px;
+  background: var(--rose);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn-secondary {
+  padding: 12px 20px;
+  background: var(--blush);
+  color: var(--mid);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.btn-danger {
+  padding: 12px 16px;
+  background: #FDE8E8;
+  color: #C0392B;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ── STATS BAR ── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.stat-tile {
+  background: white;
+  border-radius: var(--radius);
+  padding: 12px;
+  text-align: center;
+  border: 1.5px solid var(--blush);
+}
+.stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: var(--dark);
+}
+.stat-lbl { font-size: 10px; color: var(--light-text); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* ── DAY VIEW ── */
+.day-view { display: none; }
+.day-view.active { display: block; }
+.week-view { display: none; }
+.week-view.active { display: block; }
+.month-view { display: none; }
+.month-view.active { display: block; }
+
+/* ── MONTH GRID ── */
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 16px;
+}
+.month-day-header {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--light-text);
+  padding: 6px 0;
+}
+.month-day {
+  background: white;
+  border-radius: var(--radius-sm);
+  min-height: 70px;
+  border: 1.5px solid var(--blush);
+  padding: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.month-day:hover { border-color: var(--rose); }
+.month-day.today { border-color: var(--rose); }
+.month-day.other-month { opacity: 0.4; }
+.month-day-num { font-size: 12px; font-weight: 600; color: var(--dark); margin-bottom: 3px; }
+.month-day.today .month-day-num { color: var(--rose); }
+.month-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin: 1px; }
+
+/* ── DAY DETAIL VIEW ── */
+.day-detail-header {
+  background: var(--dark);
+  color: white;
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.day-detail-date {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+}
+.day-detail-back {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: white;
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.timeline-item {
+  background: white;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  border: 1.5px solid var(--blush);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.timeline-time {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--light-text);
+  min-width: 50px;
+  margin-top: 2px;
+}
+.timeline-content { flex: 1; }
+.timeline-title { font-size: 14px; font-weight: 600; color: var(--dark); }
+.timeline-sub { font-size: 12px; color: var(--light-text); margin-top: 2px; }
+.timeline-stage { font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; margin-top: 4px; display: inline-block; }
+.stage-film { background: #EDF6F2; color: var(--deep-sage); }
+.stage-edit { background: #EEF0FA; color: var(--deep-lav); }
+.stage-publish { background: #FDF0EA; color: var(--deep-rose); }
+
+/* ── MOBILE ── */
+@media (max-width: 600px) {
+  .week-grid { grid-template-columns: repeat(3, 1fr); }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .header-title { font-size: 16px; }
+  .view-tab { padding: 5px 10px; font-size: 11px; }
+  .main { padding: 12px 10px; }
+  .backlog-filters { gap: 4px; }
+  .filter-pill { padding: 4px 10px; font-size: 10px; }
+  .modal { border-radius: 20px 20px 0 0; }
+  .modal-row { grid-template-columns: 1fr; }
+  .week-label { font-size: 14px; }
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+.day-col.blocked { background: #F5F0F0; border-color: #DDD; }
+.day-col.blocked .day-num { color: #BBB; }
+.day-col.blocked .day-body { opacity: 0.5; }
+.day-col.blocked .day-body .block-btn { pointer-events: all; opacity: 1; }
+.blocked-label { text-align: center; font-size: 10px; font-weight: 700; color: #AAA; padding: 4px; background: #EEE; border-radius: 4px; margin: 2px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+.block-btn { background: none; border: 1.5px dashed #DDD; border-radius: 8px; padding: 4px; font-size: 14px; color: #CCC; cursor: pointer; width: 100%; transition: all 0.15s; margin-top: auto; }
+.block-btn:hover { border-color: #AAA; color: #888; background: #F5F0F0; }
+.month-day.blocked { background: #F5F0F0; }
+.month-day.blocked .month-day-num { color: #BBB; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--cream); }
+::-webkit-scrollbar-thumb { background: var(--mauve); border-radius: 99px; }
+
+.block-type-btn {
+  padding: 10px 8px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--blush);
+  background: white;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--mid);
+  font-weight: 500;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.block-type-btn.active { background: var(--dark); color: white; border-color: var(--dark); }
+.block-type-btn:hover:not(.active) { background: var(--blush); }
+
+.filming-rule {
+  background: linear-gradient(135deg, #EDF6F2, #E8F4F0);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--deep-sage);
+  margin-bottom: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.empty-day {
+  text-align: center;
+  padding: 20px;
+  color: var(--light-text);
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">Unbox My Box</div>
+    <div class="header-sub">Content Calendar</div>
+  </div>
+  <div class="view-tabs">
+    <button class="view-tab" onclick="setView('day')">Day</button>
+    <button class="view-tab active" onclick="setView('week')">Week</button>
+    <button class="view-tab" onclick="setView('month')">Month</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-tile">
+      <div class="stat-num" id="stat-backlog">0</div>
+      <div class="stat-lbl">To Film</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-num" id="stat-scheduled">0</div>
+      <div class="stat-lbl">Scheduled</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-num" id="stat-deadlines">0</div>
+      <div class="stat-lbl">Deadlines</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-num" id="stat-published">0</div>
+      <div class="stat-lbl">Published</div>
+    </div>
+  </div>
+
+  <!-- WEEK VIEW -->
+  <div class="week-view active" id="week-view">
+    <div class="week-nav">
+      <button class="nav-btn" onclick="shiftWeek(-1)">← Prev</button>
+      <div class="week-label" id="week-label"></div>
+      <div style="display:flex;gap:6px">
+        <button class="today-btn" onclick="goToToday()">Today</button>
+        <button class="nav-btn" onclick="shiftWeek(1)">Next →</button>
+      </div>
+    </div>
+    <div class="week-grid" id="week-grid"></div>
+  </div>
+
+  <!-- DAY VIEW -->
+  <div class="day-view" id="day-view">
+    <div class="week-nav">
+      <button class="nav-btn" onclick="shiftDay(-1)">← Prev</button>
+      <div class="week-label" id="day-label"></div>
+      <div style="display:flex;gap:6px">
+        <button class="today-btn" onclick="goToToday()">Today</button>
+        <button class="nav-btn" onclick="shiftDay(1)">Next →</button>
+      </div>
+    </div>
+    <div id="day-content"></div>
+  </div>
+
+  <!-- MONTH VIEW -->
+  <div class="month-view" id="month-view">
+    <div class="week-nav">
+      <button class="nav-btn" onclick="shiftMonth(-1)">← Prev</button>
+      <div class="week-label" id="month-label"></div>
+      <div style="display:flex;gap:6px">
+        <button class="today-btn" onclick="goToToday()">Today</button>
+        <button class="nav-btn" onclick="shiftMonth(1)">Next →</button>
+      </div>
+    </div>
+    <div id="month-grid-container"></div>
+  </div>
+
+  <!-- BACKLOG -->
+  <div class="backlog-panel" style="margin-top:16px;">
+    <div class="backlog-header">
+      <div class="backlog-title">Content Backlog</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="backlog-count" id="backlog-count">0</span>
+        <button onclick="openAddModal()" style="background:var(--rose);color:white;border:none;border-radius:99px;padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;">+ Add</button>
+      </div>
+    </div>
+    <div class="backlog-filters">
+      <button class="filter-pill active" onclick="filterBacklog('all',this)">All</button>
+      <button class="filter-pill high" onclick="filterBacklog('high',this)">⚡ Priority</button>
+      <button class="filter-pill" onclick="filterBacklog('deadline',this)">📅 Deadline</button>
+      <button class="filter-pill" onclick="filterBacklog('Campaign',this)">Campaign</button>
+      <button class="filter-pill" onclick="filterBacklog('FGF',this)">FGF</button>
+      <button class="filter-pill" onclick="filterBacklog('Purchase',this)">Purchase</button>
+      <button class="filter-pill" onclick="filterBacklog('YS Sponsored',this)">YS Sponsored</button>
+      <button class="filter-pill" onclick="filterBacklog('Skincare',this)">Skincare</button>
+      <button class="filter-pill" onclick="filterBacklog('Haircare',this)">Haircare</button>
+      <button class="filter-pill" onclick="filterBacklog('Mystery Box',this)">Mystery Box</button>
+    </div>
+    <div class="backlog-list" id="backlog-list"></div>
+  </div>
+
+</div>
+
+<!-- SCHEDULE MODAL -->
+<div class="modal-overlay" id="schedule-modal">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Schedule Content</div>
+    <div id="modal-item-detail" class="modal-detail" style="display:none"></div>
+    <div class="modal-field">
+      <label class="modal-label">Film Date</label>
+      <input type="date" class="modal-input" id="sched-film-date">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Edit Date</label>
+      <input type="date" class="modal-input" id="sched-edit-date">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Publish Date</label>
+      <input type="date" class="modal-input" id="sched-pub-date">
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label">Platform</label>
+        <select class="modal-input modal-select" id="sched-platform">
+          <option value="">-- Select --</option>
+          <option value="(YTL)">YouTube Long (YTL)</option>
+          <option value="(YTS)">YouTube Short (YTS)</option>
+          <option value="(YTS+IG)">YT Short + IG Reels</option>
+          <option value="(YTL+IG)">YT Long + IG</option>
+          <option value="Amazon">Amazon Vine</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Stage</label>
+        <select class="modal-input modal-select" id="sched-stage">
+          <option value="to_film">To Film</option>
+          <option value="to_edit">To Edit</option>
+          <option value="to_publish">To Publish</option>
+          <option value="published">Published ✓</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Notes</label>
+      <input type="text" class="modal-input" id="sched-notes" placeholder="Any filming or editing notes...">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="saveSchedule()">Save</button>
+      <button class="btn-danger" onclick="removeFromSchedule()" id="remove-btn" style="display:none">Remove</button>
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ITEM MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-title">Add Content Item</div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label">Product / Title</label>
+        <input type="text" class="modal-input" id="add-name" placeholder="e.g. Arencia Minis Bundle">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Brand</label>
+        <input type="text" class="modal-input" id="add-brand" placeholder="e.g. Arencia">
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label">Category</label>
+        <select class="modal-input modal-select" id="add-category">
+          <option>Skincare</option>
+          <option>Haircare</option>
+          <option>Makeup/SPF</option>
+          <option>Mystery Box</option>
+          <option>Tools</option>
+          <option>Body</option>
+          <option>Supplements</option>
+          <option>Fragrance</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Source</label>
+        <select class="modal-input modal-select" id="add-source">
+          <option>FGF</option>
+          <option>Campaign</option>
+          <option>YS Sponsored</option>
+          <option>Purchase</option>
+          <option>Vine</option>
+          <option>PR</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label">Platform</label>
+        <select class="modal-input modal-select" id="add-platform">
+          <option value="">(YTL)</option>
+          <option value="(YTS)">(YTS)</option>
+          <option value="(YTS+IG)">(YTS+IG)</option>
+          <option value="(YTL+IG)">(YTL+IG)</option>
+          <option value="Amazon">Amazon</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Priority</label>
+        <select class="modal-input modal-select" id="add-priority">
+          <option value="normal">Normal</option>
+          <option value="high">High ⚡</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-field">
+        <label class="modal-label">Deadline (if any)</label>
+        <input type="date" class="modal-input" id="add-deadline">
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Cheers content?</label>
+        <select class="modal-input modal-select" id="add-cheers">
+          <option value="N">No</option>
+          <option value="Y">Yes 🥂</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Angle / Notes</label>
+      <input type="text" class="modal-input" id="add-angle" placeholder="Video concept or angle...">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="saveNewItem()">Add to Backlog</button>
+      <button class="btn-secondary" onclick="closeAddModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- BLOCK DAY MODAL -->
+<div class="modal-overlay" id="block-modal">
+  <div class="modal">
+    <div class="modal-title">Block Day</div>
+    <div class="modal-field">
+      <label class="modal-label">Date</label>
+      <input type="date" class="modal-input" id="block-date" readonly>
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Reason</label>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;" id="block-type-grid">
+        <button class="block-type-btn active" data-val="🏖️ Vacation" onclick="selectBlockType(this)">🏖️ Vacation</button>
+        <button class="block-type-btn" data-val="👨‍👩‍👧‍👦 Family Day" onclick="selectBlockType(this)">👨‍👩‍👧‍👦 Family Day</button>
+        <button class="block-type-btn" data-val="💪 Fitness Day" onclick="selectBlockType(this)">💪 Fitness Day</button>
+        <button class="block-type-btn" data-val="🚫 Unavailable" onclick="selectBlockType(this)">🚫 Unavailable</button>
+        <button class="block-type-btn" data-val="💕 Date Day" onclick="selectBlockType(this)">💕 Date Day</button>
+        <button class="block-type-btn" data-val="🍽️ Family Dinner" onclick="selectBlockType(this)">🍽️ Family Dinner</button>
+      </div>
+      <input type="text" class="modal-input" id="block-custom" placeholder="Or type a custom reason...">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-primary" onclick="saveBlockDay()">Block Day</button>
+      <button class="btn-danger" onclick="unblockDay()" id="unblock-btn" style="display:none">Unblock</button>
+      <button class="btn-secondary" onclick="closeBlockModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHIP DETAIL MODAL -->
+<div class="modal-overlay" id="chip-modal">
+  <div class="modal">
+    <div class="modal-title" id="chip-modal-title"></div>
+    <div id="chip-modal-body"></div>
+    <div class="modal-btns" id="chip-modal-btns"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──
+var BACKLOG = [{"id": "grp_celebrity", "name": "Celebrity Owned Beauty", "brand": "Various", "category": "Skincare/Makeup", "status": "Grouped", "content": "Cindy Crawford, Sofia Vergara, JLo (x2), Ayesha Curry", "angle": "Cindy Crawford, Sofia Vergara, JLo (x2), Ayesha Curry", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Meaningful Beauty Eye Serum", "Toty Illumina Tinted SPF", "JLO Ultimate Body Serum", "JLO Targeted Booty Balm", "Sweet July Soursop Vitamin C Serum"]}, {"id": "grp_rebought", "name": "Items I Loved and Rebought", "brand": "Various", "category": "Skincare/Haircare", "status": "Grouped", "content": "Alastin, LypoSpheric Vit C, Whish Beauty, Gloss Moderne Hair Masks, Le Mieux, Charlotte Tilbury, Reves, Divi + maybe Amika", "angle": "Alastin, LypoSpheric Vit C, Whish Beauty, Gloss Moderne Hair Masks, Le Mieux, Charlotte Tilbury, Reves, Divi + maybe Amika", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Alastin C-Radical Defense Serum", "LypoSpheric Vitamin C", "Whish Beauty Super Cream", "Gloss Moderne Hair Masque Tube", "Gloss Moderne Hair Mask Jar", "Le Mieux TGF-B Serum", "Charlotte Tilbury Highlighter Wand", "Gloss Moderne Reves Perfume Oil", "Divi 3-in-1 Leave In", "Amika Dream Hair Duo (maybe)"]}, {"id": "grp_gloss_moderne", "name": "Brand Spotlight — Gloss Moderne", "brand": "Gloss Moderne", "category": "Haircare/Fragrance", "status": "Grouped", "content": "Hair masks tube + jar, Nouvelle Amie perfume spray, Reves perfume oil", "angle": "Hair masks tube + jar, Nouvelle Amie perfume spray, Reves perfume oil", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Clean Luxury Hair Masque Tube", "Clean Luxury Hair Mask Jar", "Travel Perfume Spray - Nouvelle Amie", "Perfume Oil - Reves"]}, {"id": "grp_glo", "name": "Brand Spotlight — Glo Skin Beauty", "brand": "Glo Skin Beauty", "category": "Makeup/SPF", "status": "Grouped", "content": "Eye bundle + eyeshadow stick", "angle": "Eye bundle + eyeshadow stick", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Eye Bundle", "Eyeshadow Stick"]}, {"id": "grp_drunk_elephant", "name": "Brand Spotlight — Drunk Elephant", "brand": "Drunk Elephant", "category": "Skincare", "status": "Grouped", "content": "DE fan for years — here's how these newcomers fit in", "angle": "DE fan for years — here's how these newcomers fit in", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["C-Luma Serum", "C-Tango Serum"]}, {"id": "grp_alastin", "name": "Brand Spotlight — Alastin", "brand": "Alastin", "category": "Skincare", "status": "Grouped", "content": "C-Radical, Restorative Skin Complex, Retinol 0.5", "angle": "C-Radical, Restorative Skin Complex, Retinol 0.5", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["C-Radical Defense Serum", "Restorative Skin Complex", "Retinol 0.5"]}, {"id": "grp_livon", "name": "Brand Spotlight — LivOn Labs", "brand": "LivOn Labs", "category": "Supplements", "status": "Grouped", "content": "LypoSpheric Vit C + B-Complex — how I stay healthy with germ magnets at home", "angle": "LypoSpheric Vit C + B-Complex — how I stay healthy with germ magnets at home", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL+IG)", "deadline": "", "stage": "to_film", "notes": "", "products": ["LypoSpheric Vitamin C", "Lipospheric B-Complex Plus"]}, {"id": "grp_medicube", "name": "Brand Spotlight — Medicube", "brand": "Medicube", "category": "Skincare", "status": "Grouped", "content": "Adding to my growing Medicube skincare hoard", "angle": "Adding to my growing Medicube skincare hoard", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Mask and Jelly Bundle"]}, {"id": "grp_kaplan", "name": "Brand Spotlight — Kaplan MD", "brand": "Kaplan MD", "category": "Skincare", "status": "Grouped", "content": "Diamond Contour Collagen Hydrating Crème", "angle": "Diamond Contour Collagen Hydrating Crème", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Diamond Contour Collagen Hydrating Crème"]}, {"id": "grp_nassif", "name": "Brand Spotlight — NassifMD", "brand": "NassifMD", "category": "Skincare", "status": "Grouped", "content": "Been using NassifMD for years — here's what's new in my collection (featuring empty detox pads)", "angle": "Been using NassifMD for years — here's what's new in my collection (featuring empty detox pads)", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Firm and Smooth Serum", "Hydro Screen Serum", "AHA/BHA Detox Pads (empty)"]}, {"id": "grp_deinde", "name": "Brand Spotlight — Deinde", "brand": "Deinde", "category": "Skincare", "status": "Grouped", "content": "Amazon-exclusive inflammaging brand — full routine with eye roller, eye cream, cleanser, serum", "angle": "Amazon-exclusive inflammaging brand — full routine with eye roller, eye cream, cleanser, serum", "priority": "high", "celebrity": "N", "source": "FGF+Purchase", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Skin Strengthening Serum", "Eye Roller Duo", "Line-Smoothing Eye Cream Duo", "Purifying Whipped Cleanser"]}, {"id": "grp_decorte", "name": "Decorte — How I Keep My Skin Hydrated When I Travel", "brand": "Decorte", "category": "Skincare", "status": "Grouped", "content": "Absolute Glow 2-piece + AQ Meliority 3-piece + Clinisoothe+ Skin Purifier", "angle": "Absolute Glow 2-piece + AQ Meliority 3-piece + Clinisoothe+ Skin Purifier", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Absolute Glow 2-piece", "Meliority 3-piece (AQ)", "Clinisoothe+ Skin Purifier"]}, {"id": "grp_biome", "name": "Biome/Pre+Probiotics Video", "brand": "Various", "category": "Skincare", "status": "Grouped", "content": "Alleven, Revoderm x2, Byroe, Ayuna", "angle": "Alleven, Revoderm x2, Byroe, Ayuna", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Vital Neck Cream (Alleven)", "HA+ Prebiotics Serum (Revoderm) x2", "Peach Kombucha Clarifying Mask (Byroe)", "Cellular Oil (Ayuna)"]}, {"id": "grp_science", "name": "Science Backed Skincare", "brand": "Various", "category": "Skincare", "status": "Grouped", "content": "Irene Forte, Go Beauty, No.7, Le Mieux, Aramore NAD+", "angle": "Irene Forte, Go Beauty, No.7, Le Mieux, Aramore NAD+", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Hibiscus Night Cream (Irene Forte)", "Modern Miracle (Go Beauty)", "Line Correcting Booster Serum (No.7)", "TGF-B Booster Serum (Le Mieux)", "NAD+ Cell Restoration Cream (Aramore)"]}, {"id": "grp_skin_health", "name": "Skin Health/Recovery Video", "brand": "Various", "category": "Skincare", "status": "Grouped", "content": "Neocutis, Sobel, Lerinn Beauty barrier repair + Deinde (dual-use)", "angle": "Neocutis, Sobel, Lerinn Beauty barrier repair + Deinde (dual-use)", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Aftercare (Neocutis)", "Soothing Mask (Sobel Skin Rx)", "Advanced Soothing Repair Serum (Lerinn Beauty)", "Skin Strengthening Serum (Deinde) - dual use"]}, {"id": "grp_retinol", "name": "Retinol/Retinal Comparison", "brand": "Various", "category": "Skincare", "status": "Grouped", "content": "Medical grade vs luxury vs next-gen — Obagi, Alastin, Hydrinity, Good Molecules x2, Nassif Hydro Screen", "angle": "Medical grade vs luxury vs next-gen — Obagi, Alastin, Hydrinity, Good Molecules x2, Nassif Hydro Screen", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["360 Retinol 0.5 (Obagi)", "Retinol 0.5 (Alastin)", "RetaXome Retinal Hydrator (Hydrinity)", "1% Retinol Night Oil (Good Molecules x2)", "Hydro Screen Serum (NassifMD)"]}, {"id": "grp_capsules", "name": "Skin Capsule Comparisons", "brand": "Various", "category": "Skincare", "status": "Grouped", "content": "Elizabeth Arden x3 + Nu Skin ageLOC", "angle": "Elizabeth Arden x3 + Nu Skin ageLOC", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Ceramide Capsules (EA)", "Retinol Ceramide Capsules Night (EA)", "Day & Night Duo Capsules (EA)", "ageLOC Tru Face Essence Ultra (Nu Skin)"]}, {"id": "grp_scalp", "name": "I Finally Treated My Scalp Like Skin", "brand": "Various", "category": "Haircare", "status": "Grouped", "content": "NatureLab, The Rootist, Color Wow + Rootist Biobrew (testimonial)", "angle": "NatureLab, The Rootist, Color Wow + Rootist Biobrew (testimonial)", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL+IG)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Perfect Clean 2-1 Scrub & Shampoo (NatureLab)", "Concentrated Shampoo and Conditioner (The Rootist)", "Youth Juice Hair Serum (Color Wow)", "Rootist Biobrew (non-FGF, testimonial)"]}, {"id": "grp_saints", "name": "Brand Spotlight — Saints & Sinners (I Keep Buying S&S)", "brand": "Saints & Sinners", "category": "Haircare", "status": "Grouped", "content": "3-piece bundle, 2-piece bundle, Velvet Divine Hair Mask", "angle": "3-piece bundle, 2-piece bundle, Velvet Divine Hair Mask", "priority": "high", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Haircare 3 Piece Bundle", "Hair 2 Piece Bundle", "Velvet Divine Hair Mask"]}, {"id": "grp_long_hair", "name": "Long Hair Survival Kit / No More Tears", "brand": "Various", "category": "Haircare", "status": "Grouped", "content": "Featuring daughter — FHI Unbrush + Amika Dream Hair Duo", "angle": "Featuring daughter — FHI Unbrush + Amika Dream Hair Duo", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL+IG)", "deadline": "", "stage": "to_film", "notes": "Weekend filming — filming with daughter", "products": ["Unbrush Detangling Brush (FHI Heat)", "Dream Hair Duo Bundle (Amika)"]}, {"id": "grp_aha", "name": "AHA Side by Side Comparison", "brand": "Various", "category": "Skincare", "status": "Grouped", "content": "Skinfix vs Onekind — 2 weeks, same side of face", "angle": "Skinfix vs Onekind — 2 weeks, same side of face", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTS)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Resurface AHA Renewing Cream (Skinfix)", "Youthdrops Night Resurfacing (Onekind)"]}, {"id": "grp_babor", "name": "Babor Ampoule Face-Off", "brand": "Babor", "category": "Skincare", "status": "Grouped", "content": "7 days, one ampoule each side of face — which won?", "angle": "7 days, one ampoule each side of face — which won?", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "Needs 7-day lead time before filming verdict", "products": ["Power Serum Ampoule - Hyaluronic Acid", "Collagen Firming Ampoules"]}, {"id": "grp_teeth", "name": "Teeth Whitening Pen Comparison", "brand": "Various", "category": "Other", "status": "Grouped", "content": "True Company vs Opalescence (dentist gifted) — ingredient comparison + 2-week test", "angle": "True Company vs Opalescence (dentist gifted) — ingredient comparison + 2-week test", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTS+IG)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Nighttime Teeth Whitening Pen (True Company)", "Opalescence Whitening Pen (dentist / retail)"]}, {"id": "grp_filler", "name": "Can This Combo Replace Lip Filler?", "brand": "Various", "category": "Makeup/SPF", "status": "Grouped", "content": "Ourself Replenishing Lip Filler + Knemo Liplock Jelly Serum", "angle": "Ourself Replenishing Lip Filler + Knemo Liplock Jelly Serum", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTS+IG)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Replenishing Lip Filler (Ourself)", "Liplock Jelly Serum (Knemo)"]}, {"id": "grp_device", "name": "Does It Work? — Luminess Hair Remover", "brand": "Luminess", "category": "Tools", "status": "Grouped", "content": "Kinetic Smooth Hair Remover — does it actually work?", "angle": "Kinetic Smooth Hair Remover — does it actually work?", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "Needs lead time for testing", "products": ["Kinetic Smooth Hair Remover"]}, {"id": "grp_lash", "name": "Lash Serum Roundup", "brand": "Various", "category": "Makeup/SPF", "status": "Grouped", "content": "Ingredient deep dive, applicator comparison, honest results — including empties that flopped", "angle": "Ingredient deep dive, applicator comparison, honest results — including empties that flopped", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL+IG)", "deadline": "", "stage": "to_film", "notes": "", "products": ["GrandeLash Serum", "Previously filmed lash serums (reference)", "Empties (honest results)"]}, {"id": "grp_mystery", "name": "FGF Mystery Bundle Haul", "brand": "FGF", "category": "Mystery", "status": "Grouped", "content": "I opened every FGF mystery bundle I've been hoarding — rapid fire format, under 20 mins", "angle": "I opened every FGF mystery bundle I've been hoarding — rapid fire format, under 20 mins", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Mystery Bundle Beauty (Feb 2026)", "Mystery Bundle Beauty (Dec 2025)", "Mystery Bundle Skincare (Dec 2025)", "Mystery Hair Bundle Duo (Sep 2025)"]}, {"id": "grp_alo", "name": "Wait... Alo Makes Body Wash? — POW Short", "brand": "Alo", "category": "Body", "status": "Grouped", "content": "First impression — athleisure brand in skincare, demo on arm with water bowl", "angle": "First impression — athleisure brand in skincare, demo on arm with water bowl", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTS+IG)", "deadline": "", "stage": "to_film", "notes": "", "products": ["Body Wash Duo (Alo)"]}, {"id": "grp_pow", "name": "Product of the Week Shorts (Pool)", "brand": "Various", "category": "Various", "status": "Grouped", "content": "Quick solo shorts — Gloss Moderne hair masks, Whish Beauty, LypoSpheric Vit C, Charlotte Tilbury", "angle": "Quick solo shorts — Gloss Moderne hair masks, Whish Beauty, LypoSpheric Vit C, Charlotte Tilbury", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTS+IG)", "deadline": "", "stage": "to_film", "notes": "Pull from here when need fast content", "products": ["Clean Luxury Hair Masque Tube (Gloss Moderne)", "Super Cream with Bakuchiol (Whish Beauty)", "LypoSpheric Vitamin C (LivOn)", "Beauty Highlighter Wand (Charlotte Tilbury)"]}, {"id": "nf_1", "name": "Arencia 5-Piece Minis Bundle", "brand": "Arencia", "category": "Skincare", "status": "Delivered", "content": "Short + Reels", "angle": "First impressions — retinal, NAD+, glycolic, PDRN, vitamin C", "priority": "high", "celebrity": "N", "source": "Campaign", "platform": "(YTS+IG)", "deadline": "2026-06-22", "stage": "to_film", "notes": ""}, {"id": "nf_2", "name": "New Beauty Box", "brand": "New Beauty", "category": "Mystery Box", "status": "Arriving Tue/Wed", "content": "Long Form Unboxing", "angle": "First mover — unbox immediately on arrival", "priority": "high", "celebrity": "N", "source": "Purchase", "platform": "(YTL)", "deadline": "2026-06-11", "stage": "to_film", "notes": ""}, {"id": "nf_3", "name": "Banila Co Volume Lip Plumper", "brand": "Banila Co", "category": "Makeup/SPF", "status": "To Order", "content": "Solo Short", "angle": "YS Sponsored — standalone short", "priority": "normal", "celebrity": "N", "source": "YS Sponsored", "platform": "(YTS)", "deadline": "", "stage": "to_order", "notes": "Monitor stock — 23% claimed"}, {"id": "nf_4", "name": "Hype Lab x Style Korean Box", "brand": "Style Korean", "category": "Mystery Box", "status": "Unopened", "content": "Long Form", "angle": "$250 of hyped K-beauty sat untouched for 6 months — did I waste my money?", "priority": "normal", "celebrity": "N", "source": "Purchase", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": ""}, {"id": "nf_5", "name": "Beauty Pass Mystery Box x4", "brand": "Beauty Pass", "category": "Mystery Box", "status": "Unopened", "content": "Bundle", "angle": "Beauty Pass mystery box reveal", "priority": "normal", "celebrity": "N", "source": "FGF", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": ""}, {"id": "nf_6", "name": "Lip Plumpers Comparison (6)", "brand": "Various", "category": "Makeup/SPF", "status": "In stash", "content": "Comparison LF", "angle": "I tested 6 lip plumpers — here is the ranking", "priority": "normal", "celebrity": "N", "source": "FGF/Purchase", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "Korean lip plumpers focus"}, {"id": "nf_7", "name": "K-Beauty Eye Tools", "brand": "Various", "category": "Tools", "status": "In stash", "content": "Comparison", "angle": "4 eyeliners + 2 lash curlers comparison", "priority": "normal", "celebrity": "N", "source": "Purchase", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": ""}, {"id": "nf_8", "name": "Deinde Brand Spotlight", "brand": "Deinde", "category": "Skincare", "status": "In stash", "content": "Brand Spotlight", "angle": "Amazon-exclusive inflammaging brand — full routine", "priority": "high", "celebrity": "N", "source": "FGF+Purchase", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": "Eye roller, eye cream, cleanser, serum"}, {"id": "nf_9", "name": "Vinbiome Retinal Serum", "brand": "107 Beauty", "category": "Skincare", "status": "Published", "content": "Short", "angle": "YS Sponsored — fermented retinal", "priority": "normal", "celebrity": "N", "source": "YS Sponsored", "platform": "(YTS)", "deadline": "", "stage": "published", "notes": "Published May 29 2026"}, {"id": "nf_10", "name": "Amazon Vine Reviews", "brand": "Various", "category": "Reviews", "status": "Backlogged", "content": "Written", "angle": "Multiple products to review", "priority": "normal", "celebrity": "N", "source": "Vine", "platform": "Amazon", "deadline": "", "stage": "to_film", "notes": ""}, {"id": "nf_11", "name": "Allure Monthly Boxes x5", "brand": "Allure", "category": "Mystery Box", "status": "Unopened", "content": "Bundle/Catchup", "angle": "Allure monthly catchup + showdown", "priority": "normal", "celebrity": "N", "source": "Purchase", "platform": "(YTL)", "deadline": "", "stage": "to_film", "notes": ""}];
+
+var SCHEDULE = {}; // key: itemId, val: {filmDate, editDate, pubDate, platform, stage, notes}
+var PUBLISHED = []; // item ids
+
+var TODAY = new Date();
+var BLOCKED_DAYS = {}; // key: dateStr, val: label
+var blockingDate = null;
+var selectedBlockType = "🏖️ Vacation";
+TODAY.setHours(0,0,0,0);
+var currentWeekStart = getWeekStart(TODAY);
+var currentDay = new Date(TODAY);
+var currentMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+var currentView = 'week';
+var activeFilter = 'all';
+var schedulingItemId = null;
+
+// ── HELPERS ──
+function getWeekStart(d) {
+  var day = new Date(d);
+  var dow = day.getDay();
+  var diff = dow === 0 ? -6 : 1 - dow;
+  day.setDate(day.getDate() + diff);
+  day.setHours(0,0,0,0);
+  return day;
+}
+function addDays(d, n) {
+  var r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}
+function fmtDate(d) {
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
+function fmtDateLong(d) {
+  return d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+}
+function isSameDay(a, b) {
+  return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate();
+}
+function dateToStr(d) {
+  return d.toISOString().split('T')[0];
+}
+function strToDate(s) {
+  if(!s) return null;
+  var parts = s.split('-');
+  return new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+}
+function isFriday(d) { return d.getDay() === 5; }
+function isWeekend(d) { return d.getDay() === 0 || d.getDay() === 6; }
+
+function getFilmingRules(d) {
+  if(isFriday(d)) return { canFilm: true, cheersOk: false, window: '11am – 12pm (short day, no cheers)' };
+  if(isWeekend(d)) return { canFilm: false, cheersOk: false, window: null };
+  return { canFilm: true, cheersOk: true, window: '11am – 5pm (cheers after 1pm, start by 4pm)' };
+}
+
+// ── STATS ──
+function updateStats() {
+  var toFilm = BACKLOG.filter(function(i){ return i.stage === 'to_film' || i.stage === 'to_order'; }).length;
+  var scheduled = Object.keys(SCHEDULE).length;
+  var deadlines = BACKLOG.filter(function(i){ return i.deadline; }).length;
+  var published = PUBLISHED.length;
+  document.getElementById('stat-backlog').textContent = toFilm;
+  document.getElementById('stat-scheduled').textContent = scheduled;
+  document.getElementById('stat-deadlines').textContent = deadlines;
+  document.getElementById('stat-published').textContent = published;
+  document.getElementById('backlog-count').textContent = BACKLOG.length;
+}
+
+// ── VIEW SWITCHING ──
+function setView(v) {
+  currentView = v;
+  document.querySelectorAll('.view-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.view-tab').forEach(function(t){ if(t.textContent.toLowerCase()===v) t.classList.add('active'); });
+  document.getElementById('week-view').classList.toggle('active', v==='week');
+  document.getElementById('day-view').classList.toggle('active', v==='day');
+  document.getElementById('month-view').classList.toggle('active', v==='month');
+  updateStats();
+  renderBacklog();
+  if(v==='week') renderWeek();
+  if(v==='day') renderDay();
+  if(v==='month') renderMonth();
+}
+
+function goToToday() {
+  currentWeekStart = getWeekStart(TODAY);
+  currentDay = new Date(TODAY);
+  currentMonth = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1);
+  if(currentView==='week') renderWeek();
+  if(currentView==='day') renderDay();
+  if(currentView==='month') renderMonth();
+}
+
+// ── WEEK VIEW ──
+function shiftWeek(n) {
+  currentWeekStart = addDays(currentWeekStart, n*7);
+  renderWeek();
+}
+
+function renderWeek() {
+  var days = [];
+  for(var i=0; i<7; i++) days.push(addDays(currentWeekStart, i));
+  var end = days[6];
+  document.getElementById('week-label').textContent =
+    fmtDate(currentWeekStart) + ' – ' + fmtDate(end) + ', ' + end.getFullYear();
+
+  var html = '';
+  days.forEach(function(d) {
+    var isToday = isSameDay(d, TODAY);
+    var fri = isFriday(d);
+    var weekend = isWeekend(d);
+    var rules = getFilmingRules(d);
+    var ds = dateToStr(d);
+    var dayName = d.toLocaleDateString('en-US',{weekday:'short'}).toUpperCase();
+    var dayNum = d.getDate();
+
+    // Check if blocked
+    var isBlocked = !!BLOCKED_DAYS[ds];
+    var blockedLabel = BLOCKED_DAYS[ds] || '';
+
+    // Get scheduled items for this day
+    var filmItems = BACKLOG.filter(function(item){ return SCHEDULE[item.id] && SCHEDULE[item.id].filmDate === ds; });
+    var editItems = BACKLOG.filter(function(item){ return SCHEDULE[item.id] && SCHEDULE[item.id].editDate === ds; });
+    var pubItems = BACKLOG.filter(function(item){ return SCHEDULE[item.id] && SCHEDULE[item.id].pubDate === ds; });
+    // Deadline items
+    var deadlineItems = BACKLOG.filter(function(item){ return item.deadline === ds; });
+
+    html += '<div class="day-col'+(isToday?' today':'')+(fri?' friday':'')+(isBlocked?' blocked':'')+'">';
+    html += '<div class="day-header"><div class="day-name">'+dayName+'</div><div class="day-num">'+dayNum+'</div></div>';
+    html += '<div class="day-body">';
+
+    if(isBlocked) {
+      html += '<div class="blocked-label">'+blockedLabel+'</div>';
+      html += '<button class="block-btn" onclick="openBlockModal(\''+ds+'\')">✏️ Edit</button>';
+    } else {
+      if(rules.window && !weekend) {
+        html += '<div class="filming-window">'+( fri ? '🌸 Short day' : (rules.cheersOk ? '🥂 Cheers OK' : '')) +'</div>';
+      }
+      if(weekend) {
+        html += '<div class="filming-window">Weekend</div>';
+      }
+
+      deadlineItems.forEach(function(item){
+        html += '<div class="chip deadline" onclick="openChipModal(\''+item.id+'\')">';
+        html += '<div class="chip-stage">📅 DEADLINE</div>';
+        html += '<div class="chip-name">'+item.brand+'</div>';
+        html += '</div>';
+      });
+
+      filmItems.forEach(function(item){
+        html += '<div class="chip film" onclick="openChipModal(\''+item.id+'\')">';
+        html += '<div class="chip-stage">🎬 FILM</div>';
+        html += '<span class="chip-name">'+item.brand+'</span>';
+        html += '</div>';
+      });
+      editItems.forEach(function(item){
+        html += '<div class="chip edit" onclick="openChipModal(\''+item.id+'\')">';
+        html += '<div class="chip-stage">✂️ EDIT</div>';
+        html += '<span class="chip-name">'+item.brand+'</span>';
+        html += '</div>';
+      });
+      pubItems.forEach(function(item){
+        html += '<div class="chip publish" onclick="openChipModal(\''+item.id+'\')">';
+        html += '<div class="chip-stage">🚀 PUBLISH</div>';
+        html += '<span class="chip-name">'+item.brand+'</span>';
+        html += '</div>';
+      });
+
+      if(!weekend) {
+        html += '<button class="add-btn" onclick="openScheduleModalForDay(\''+ds+'\')">+</button>';
+        html += '<button class="block-btn" onclick="openBlockModal(\''+ds+'\')" style="font-size:11px;color:#CCC;padding:3px;">🚫 block day</button>';
+      }
+    }
+    html += '</div></div>';
+  });
+  document.getElementById('week-grid').innerHTML = html;
+}
+
+// ── DAY VIEW ──
+function shiftDay(n) { currentDay = addDays(currentDay, n); renderDay(); }
+function renderDay() {
+  var d = currentDay;
+  var ds = dateToStr(d);
+  document.getElementById('day-label').textContent = fmtDateLong(d);
+  var rules = getFilmingRules(d);
+  var filmItems = BACKLOG.filter(function(item){ return SCHEDULE[item.id] && SCHEDULE[item.id].filmDate === ds; });
+  var editItems = BACKLOG.filter(function(item){ return SCHEDULE[item.id] && SCHEDULE[item.id].editDate === ds; });
+  var pubItems = BACKLOG.filter(function(item){ return SCHEDULE[item.id] && SCHEDULE[item.id].pubDate === ds; });
+  var deadlineItems = BACKLOG.filter(function(item){ return item.deadline === ds; });
+
+  var html = '';
+  if(rules.window) {
+    html += '<div class="filming-rule">📅 Filming window: <strong>'+rules.window+'</strong>'+(rules.cheersOk ? ' 🥂' : '')+' </div>';
+  }
+
+  var allItems = [];
+  deadlineItems.forEach(function(i){ allItems.push({item:i, type:'deadline', time:'All day'}); });
+  filmItems.forEach(function(i){ allItems.push({item:i, type:'film', time:'11:00 AM'}); });
+  editItems.forEach(function(i){ allItems.push({item:i, type:'edit', time:'Flex'}); });
+  pubItems.forEach(function(i){ allItems.push({item:i, type:'publish', time:'Morning'}); });
+
+  if(allItems.length === 0) {
+    html += '<div class="empty-day" style="background:white;border-radius:14px;border:1.5px solid var(--blush);">Nothing scheduled for this day.<br><br><button onclick="openScheduleModalForDay(\''+ds+'\')" style="background:var(--rose);color:white;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-size:13px;font-weight:600;">+ Schedule Something</button></div>';
+  } else {
+    html += '<div class="timeline">';
+    allItems.forEach(function(entry){
+      var stageClass = entry.type === 'film' ? 'stage-film' : (entry.type === 'edit' ? 'stage-edit' : (entry.type === 'publish' ? 'stage-publish' : ''));
+      var stageLabel = entry.type === 'film' ? '🎬 Film' : (entry.type === 'edit' ? '✂️ Edit' : (entry.type === 'publish' ? '🚀 Publish' : '📅 Deadline'));
+      html += '<div class="timeline-item" onclick="openChipModal(\''+entry.item.id+'\')">';
+      html += '<div class="timeline-time">'+entry.time+'</div>';
+      html += '<div class="timeline-content">';
+      html += '<div class="timeline-title">'+entry.item.name+'</div>';
+      html += '<div class="timeline-sub">'+entry.item.brand+' • '+entry.item.platform+'</div>';
+      html += '<span class="timeline-stage '+stageClass+'">'+stageLabel+'</span>';
+      if(SCHEDULE[entry.item.id] && SCHEDULE[entry.item.id].notes) {
+        html += '<div style="font-size:12px;color:var(--light-text);margin-top:4px;">'+SCHEDULE[entry.item.id].notes+'</div>';
+      }
+      html += '</div></div>';
+    });
+    html += '</div>';
+    html += '<button onclick="openScheduleModalForDay(\''+ds+'\')" style="width:100%;padding:12px;background:var(--blush);border:none;border-radius:var(--radius-sm);color:var(--mid);font-size:13px;font-weight:600;cursor:pointer;">+ Add more</button>';
+  }
+  document.getElementById('day-content').innerHTML = html;
+}
+
+// ── MONTH VIEW ──
+function shiftMonth(n) {
+  currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth()+n, 1);
+  renderMonth();
+}
+function renderMonth() {
+  document.getElementById('month-label').textContent =
+    currentMonth.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  var days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var html = '<div class="month-grid">';
+  days.forEach(function(d){ html += '<div class="month-day-header">'+d+'</div>'; });
+
+  var firstDay = new Date(currentMonth);
+  var dow = firstDay.getDay();
+  var offset = dow === 0 ? 6 : dow - 1;
+  var startDate = addDays(firstDay, -offset);
+
+  for(var i=0; i<42; i++) {
+    var d = addDays(startDate, i);
+    var ds = dateToStr(d);
+    var isToday = isSameDay(d, TODAY);
+    var otherMonth = d.getMonth() !== currentMonth.getMonth();
+    var filmItems = BACKLOG.filter(function(item){ return SCHEDULE[item.id] && SCHEDULE[item.id].filmDate === ds; });
+    var editItems = BACKLOG.filter(function(item){ return SCHEDULE[item.id] && SCHEDULE[item.id].editDate === ds; });
+    var pubItems = BACKLOG.filter(function(item){ return SCHEDULE[item.id] && SCHEDULE[item.id].pubDate === ds; });
+    var hasDeadline = BACKLOG.some(function(item){ return item.deadline === ds; });
+
+    html += '<div class="month-day'+(isToday?' today':'')+(otherMonth?' other-month':'')+'" onclick="clickMonthDay(\''+ds+'\')">';
+    html += '<div class="month-day-num">'+d.getDate()+'</div>';
+    if(isDayBlocked) html += '<div style="font-size:8px;color:#AAA;font-weight:600;">'+BLOCKED_DAYS[ds].split(' ')[0]+'</div>';
+    if(hasDeadline) html += '<span class="month-dot" style="background:var(--gold)"></span>';
+    filmItems.forEach(function(){ html += '<span class="month-dot" style="background:var(--sage)"></span>'; });
+    editItems.forEach(function(){ html += '<span class="month-dot" style="background:var(--lavender)"></span>'; });
+    pubItems.forEach(function(){ html += '<span class="month-dot" style="background:var(--rose)"></span>'; });
+    html += '</div>';
+  }
+  html += '</div>';
+  html += '<div style="display:flex;gap:12px;font-size:11px;color:var(--light-text);padding:8px 0;">';
+  html += '<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-right:4px"></span>Deadline</span>';
+  html += '<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--sage);margin-right:4px"></span>Film</span>';
+  html += '<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--lavender);margin-right:4px"></span>Edit</span>';
+  html += '<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--rose);margin-right:4px"></span>Publish</span>';
+  html += '</div>';
+  document.getElementById('month-grid-container').innerHTML = html;
+}
+
+function clickMonthDay(ds) {
+  currentDay = strToDate(ds);
+  setView('day');
+}
+
+// ── BACKLOG ──
+function filterBacklog(filter, btn) {
+  activeFilter = filter;
+  document.querySelectorAll('.filter-pill').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  renderBacklog();
+}
+
+function renderBacklog() {
+  var items = BACKLOG.filter(function(item){
+    if(activeFilter === 'all') return true;
+    if(activeFilter === 'high') return item.priority === 'high';
+    if(activeFilter === 'deadline') return !!item.deadline;
+    return item.source === activeFilter || item.category === activeFilter;
+  });
+
+  var html = '';
+  if(items.length === 0) {
+    html = '<div class="empty-day">No items match this filter.</div>';
+  }
+  items.forEach(function(item){
+    var dotClass = item.source === 'Campaign' ? 'dot-campaign' : (item.source === 'Purchase' ? 'dot-purchase' : 'dot-film');
+    var isHighPri = item.priority === 'high';
+    html += '<div class="backlog-item'+(isHighPri?' priority-high':'')+'">';
+    html += '<div class="backlog-dot '+dotClass+'"></div>';
+    html += '<div class="backlog-info">';
+    html += '<div class="backlog-name">'+item.name+'</div>';
+    html += '<div class="backlog-meta">'+item.brand+' • '+item.category+(item.angle ? ' • '+item.angle.substring(0,50)+(item.angle.length>50?'...':'') : '')+'</div>';
+    html += '</div>';
+    html += '<div class="backlog-badges">';
+    if(item.deadline) html += '<span class="badge badge-deadline">Due '+item.deadline.split('-').slice(1).join('/')+'</span>';
+    if(isHighPri) html += '<span class="badge badge-high">⚡ Priority</span>';
+    if(item.platform) html += '<span class="badge badge-platform">'+item.platform+'</span>';
+    if(item.source === 'Campaign' || item.source === 'YS Sponsored') html += '<span class="badge badge-campaign">'+item.source+'</span>';
+    html += '</div>';
+    html += '<button class="schedule-btn" onclick="openScheduleModal(\''+item.id+'\')">Schedule</button>';
+    html += '</div>';
+  });
+  document.getElementById('backlog-list').innerHTML = html;
+}
+
+// ── SCHEDULE MODAL ──
+function openScheduleModal(itemId) {
+  schedulingItemId = itemId;
+  var item = BACKLOG.find(function(i){ return i.id === itemId; });
+  if(!item) return;
+
+  document.getElementById('modal-title').textContent = 'Schedule: '+item.name;
+  var detail = document.getElementById('modal-item-detail');
+  detail.style.display = 'block';
+  detail.innerHTML = '<div class="modal-detail-label">Brand / Category</div><div class="modal-detail-val">'+item.brand+' • '+item.category+'</div>';
+  if(item.angle) detail.innerHTML += '<div class="modal-detail-label" style="margin-top:8px">Angle</div><div class="modal-detail-val" style="font-size:13px;color:var(--mid)">'+item.angle+'</div>';
+
+  var existing = SCHEDULE[itemId] || {};
+  document.getElementById('sched-film-date').value = existing.filmDate || '';
+  document.getElementById('sched-edit-date').value = existing.editDate || '';
+  document.getElementById('sched-pub-date').value = existing.pubDate || '';
+  document.getElementById('sched-platform').value = existing.platform || item.platform || '';
+  document.getElementById('sched-stage').value = existing.stage || item.stage || 'to_film';
+  document.getElementById('sched-notes').value = existing.notes || '';
+  document.getElementById('remove-btn').style.display = existing.filmDate ? 'block' : 'none';
+
+  document.getElementById('schedule-modal').classList.add('open');
+}
+
+function openScheduleModalForDay(ds) {
+  var highPri = BACKLOG.filter(function(i){ return i.priority==='high' && !SCHEDULE[i.id]; });
+  if(highPri.length > 0) {
+    openScheduleModal(highPri[0].id);
+    document.getElementById('sched-film-date').value = ds;
+  } else {
+    var unscheduled = BACKLOG.filter(function(i){ return !SCHEDULE[i.id]; });
+    if(unscheduled.length > 0) {
+      openScheduleModal(unscheduled[0].id);
+      document.getElementById('sched-film-date').value = ds;
+    }
+  }
+}
+
+function saveSchedule() {
+  var filmDate = document.getElementById('sched-film-date').value;
+  var editDate = document.getElementById('sched-edit-date').value;
+  var pubDate = document.getElementById('sched-pub-date').value;
+  var platform = document.getElementById('sched-platform').value;
+  var stage = document.getElementById('sched-stage').value;
+  var notes = document.getElementById('sched-notes').value;
+
+  if(filmDate || editDate || pubDate) {
+    SCHEDULE[schedulingItemId] = { filmDate:filmDate, editDate:editDate, pubDate:pubDate, platform:platform, stage:stage, notes:notes };
+    var item = BACKLOG.find(function(i){ return i.id === schedulingItemId; });
+    if(item) { item.stage = stage; if(platform) item.platform = platform; }
+    if(stage === 'published') PUBLISHED.push(schedulingItemId);
+  }
+
+  closeModal();
+  renderWeek();
+  renderBacklog();
+  updateStats();
+  if(currentView==='day') renderDay();
+  if(currentView==='month') renderMonth();
+}
+
+function removeFromSchedule() {
+  delete SCHEDULE[schedulingItemId];
+  closeModal();
+  renderWeek();
+  renderBacklog();
+  updateStats();
+}
+
+function closeModal() {
+  document.getElementById('schedule-modal').classList.remove('open');
+  schedulingItemId = null;
+}
+
+// ── CHIP MODAL ──
+function openChipModal(itemId) {
+  var item = BACKLOG.find(function(i){ return i.id === itemId; });
+  if(!item) return;
+  var sched = SCHEDULE[itemId] || {};
+
+  document.getElementById('chip-modal-title').textContent = item.name;
+  var html = '';
+  html += '<div class="modal-detail">';
+  html += '<div class="modal-detail-label">Brand</div><div class="modal-detail-val">'+item.brand+'</div>';
+  html += '<div class="modal-detail-label" style="margin-top:8px">Category / Source</div><div class="modal-detail-val">'+item.category+' • '+item.source+'</div>';
+  if(item.products && item.products.length > 0) {
+    html += '<div class="modal-detail-label" style="margin-top:8px">Products in this video</div>';
+    html += '<div class="modal-detail-val" style="font-size:12px;">';
+    item.products.forEach(function(p){ html += '• ' + p + '<br>'; });
+    html += '</div>';
+  }
+  if(item.platform) html += '<div class="modal-detail-label" style="margin-top:8px">Platform</div><div class="modal-detail-val">'+item.platform+'</div>';
+  if(item.deadline) html += '<div class="modal-detail-label" style="margin-top:8px">⚡ Deadline</div><div class="modal-detail-val" style="color:var(--gold)">'+item.deadline+'</div>';
+  if(sched.filmDate) html += '<div class="modal-detail-label" style="margin-top:8px">🎬 Film</div><div class="modal-detail-val">'+sched.filmDate+'</div>';
+  if(sched.editDate) html += '<div class="modal-detail-label" style="margin-top:8px">✂️ Edit</div><div class="modal-detail-val">'+sched.editDate+'</div>';
+  if(sched.pubDate) html += '<div class="modal-detail-label" style="margin-top:8px">🚀 Publish</div><div class="modal-detail-val">'+sched.pubDate+'</div>';
+  if(sched.notes) html += '<div class="modal-detail-label" style="margin-top:8px">Notes</div><div class="modal-detail-val" style="font-size:13px">'+sched.notes+'</div>';
+  html += '</div>';
+  document.getElementById('chip-modal-body').innerHTML = html;
+
+  var btns = '<button class="btn-primary" onclick="document.getElementById(\'chip-modal\').classList.remove(\'open\');openScheduleModal(\''+itemId+'\')">Edit Schedule</button>';
+  btns += '<button class="btn-secondary" onclick="document.getElementById(\'chip-modal\').classList.remove(\'open\')">Close</button>';
+  document.getElementById('chip-modal-btns').innerHTML = btns;
+  document.getElementById('chip-modal').classList.add('open');
+}
+
+// ── ADD ITEM MODAL ──
+function openAddModal() {
+  document.getElementById('add-modal').classList.add('open');
+}
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('open');
+}
+function saveNewItem() {
+  var name = document.getElementById('add-name').value.trim();
+  var brand = document.getElementById('add-brand').value.trim();
+  if(!name || !brand) return;
+  var newItem = {
+    id: 'custom_'+Date.now(),
+    name: name,
+    brand: brand,
+    category: document.getElementById('add-category').value,
+    source: document.getElementById('add-source').value,
+    platform: document.getElementById('add-platform').value,
+    priority: document.getElementById('add-priority').value,
+    deadline: document.getElementById('add-deadline').value,
+    angle: document.getElementById('add-angle').value,
+    cheers: document.getElementById('add-cheers').value,
+    stage: 'to_film',
+    status: 'Pending',
+    celebrity: 'N',
+    content: ''
+  };
+  BACKLOG.unshift(newItem);
+  closeAddModal();
+  renderBacklog();
+  updateStats();
+  if(currentView==='week') renderWeek();
+}
+
+// ── CLOSE MODALS ON OVERLAY CLICK ──
+document.getElementById('schedule-modal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+document.getElementById('add-modal').addEventListener('click', function(e){ if(e.target===this) closeAddModal(); });
+document.getElementById('chip-modal').addEventListener('click', function(e){ if(e.target===this) e.target.classList.remove('open'); });
+document.getElementById('block-modal').addEventListener('click', function(e){ if(e.target===this) closeBlockModal(); });
+
+// ── BLOCK DAY FUNCTIONS ──
+function openBlockModal(ds) {
+  blockingDate = ds;
+  document.getElementById('block-date').value = ds;
+  var existing = BLOCKED_DAYS[ds];
+  document.getElementById('block-custom').value = existing || '';
+  document.getElementById('unblock-btn').style.display = existing ? 'block' : 'none';
+  selectedBlockType = '🏖️ Vacation';
+  document.querySelectorAll('.block-type-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.block-type-btn')[0].classList.add('active');
+  document.getElementById('block-modal').classList.add('open');
+}
+function selectBlockType(btn) {
+  selectedBlockType = btn.getAttribute('data-val');
+  document.querySelectorAll('.block-type-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('block-custom').value = '';
+}
+function saveBlockDay() {
+  var custom = document.getElementById('block-custom').value.trim();
+  BLOCKED_DAYS[blockingDate] = custom || selectedBlockType;
+  closeBlockModal();
+  if(currentView==='week') renderWeek();
+  if(currentView==='day') renderDay();
+  if(currentView==='month') renderMonth();
+}
+function unblockDay() {
+  delete BLOCKED_DAYS[blockingDate];
+  closeBlockModal();
+  if(currentView==='week') renderWeek();
+  if(currentView==='day') renderDay();
+  if(currentView==='month') renderMonth();
+}
+function closeBlockModal() {
+  document.getElementById('block-modal').classList.remove('open');
+  blockingDate = null;
+}
+
+// Pre-populate published items
+SCHEDULE['nf_9'] = { filmDate:'2026-05-29', editDate:'2026-05-29', pubDate:'2026-05-29', platform:'(YTS)', stage:'published', notes:'Published May 29 2026' };
+PUBLISHED.push('nf_9');
+
+// ── INIT ──
+// Auto-detect mobile and default to day view
+if(window.innerWidth < 600) {
+  setView('day');
+} else {
+  updateStats();
+  renderWeek();
+  renderBacklog();
+}
+</script>
+</body>
+</html>
